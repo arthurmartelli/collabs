@@ -1,2 +1,3 @@
-# collabs
-Collaboratin projects
+# Collabs
+
+Collaboration projects
