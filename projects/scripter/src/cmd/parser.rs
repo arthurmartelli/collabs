@@ -1,7 +1,7 @@
 use std::io::{BufRead, BufReader};
 
 use super::{
-    commands::{click::ClickCommand, kbd::KbdCommand, wait::WaitCommand},
+    commands::{kbd::KbdCommand, mouse::MouseCommand, wait::WaitCommand},
     Commands, SubCommand,
 };
 
@@ -14,7 +14,7 @@ fn parse_line(line: String) -> Commands {
     match cmd {
         &"wait" => Commands::WAIT(WaitCommand::parse(words)),
         &"kbd" => Commands::KBD(KbdCommand::parse(words)),
-        &"click" => Commands::CLICK(ClickCommand::parse(words)),
+        &"mouse" => Commands::MOUSE(MouseCommand::parse(words)),
         _ => panic!("Unknown command: {}", cmd),
     }
 }
