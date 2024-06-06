@@ -13,6 +13,7 @@ pub(crate) trait SubCommand {
 pub enum Commands {
     WAIT(commands::wait::WaitCommand),
     KBD(commands::kbd::KbdCommand),
+    CLICK(commands::click::ClickCommand),
 }
 
 impl Commands {
@@ -26,10 +27,11 @@ impl Commands {
         match self {
             Commands::WAIT(cmd) => cmd.execute(),
             Commands::KBD(cmd) => cmd.execute(),
+            Commands::CLICK(cmd) => cmd.execute(),
         }
     }
 }
 
 fn panic_command<T: std::fmt::Display>(command: T) -> ! {
-    panic!("Unknown command: {}", command)
+    panic!("Error in command: {}", command)
 }

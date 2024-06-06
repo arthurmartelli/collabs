@@ -1,4 +1,5 @@
-wait time 1s
+wait time 1 seconds
 kbd p a
 kbd r a
+click d r
 kbd t abc
