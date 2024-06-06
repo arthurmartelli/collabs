@@ -31,7 +31,7 @@ mod tests {
     use std::io::Cursor;
     #[test]
     fn test_parse_line() {
-        let line = "wait 1s".to_string();
+        let line = "wait time 1s".to_string();
         assert_eq!(
             parse_line(line),
             Commands::WAIT(WaitCommand::Time("1s".to_string()))
@@ -40,7 +40,7 @@ mod tests {
 
     #[test]
     fn test_parse_buffer() {
-        let buffer = "wait 1\nkbd p a\nkbd r b\nkbd t abc".to_string();
+        let buffer = "wait time 1\nkbd p a\nkbd r a\nkbd t abc".to_string();
         let reader = BufReader::new(Cursor::new(buffer));
         parse_buffer(reader);
     }
