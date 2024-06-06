@@ -1,21 +1,42 @@
+use enigo::{
+    Direction::{Click, Press, Release},
+    Enigo, Key, Keyboard, Settings,
+};
+
 use crate::cmd::{panic_command, SubCommand};
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum KbdCommand {
     // press key
-    P(String),
+    P(Key),
     // release key
-    R(String),
+    R(Key),
+    // click key
+    C(Key),
     // type string
     T(String),
 }
 
 impl SubCommand for KbdCommand {
     fn execute(&self) {
+        let mut enigo = Enigo::new(&Settings::default())
+            .unwrap_or_else(|_| panic!("Unable to use the keyboard"));
+
         match self {
-            KbdCommand::P(c) => println!("press {}", c),
-            KbdCommand::R(c) => println!("release {}", c),
-            KbdCommand::T(s) => println!("type {}", s),
+            KbdCommand::P(s) => enigo
+                .key(*s, Press)
+                .unwrap_or_else(|_| panic!("Unable to press {:?}", s)),
+            KbdCommand::R(s) => enigo
+                .key(*s, Release)
+                .unwrap_or_else(|_| panic!("Unable to release {:?}", s)),
+            KbdCommand::C(s) => {
+                enigo
+                    .key(*s, Click)
+                    .unwrap_or_else(|_| panic!("Unable to click {:?}", s));
+            }
+            KbdCommand::T(s) => enigo
+                .text(s)
+                .unwrap_or_else(|_| panic!("Unable to type {}", s)),
         }
     }
 
@@ -28,10 +49,37 @@ impl SubCommand for KbdCommand {
         let args = words[2..].to_vec();
 
         match sub {
-            "p" => KbdCommand::P(args[0].clone()),
-            "r" => KbdCommand::R(args[0].clone()),
+            "p" => KbdCommand::P(Key::from_string(&args[0])),
+            "r" => KbdCommand::R(Key::from_string(&args[0])),
+            "c" => KbdCommand::C(Key::from_string(&args[0])),
             "t" => KbdCommand::T(args.join(" ")),
             _ => panic_command(panic_msg),
+        }
+    }
+}
+
+pub trait FromString {
+    fn from_string<T: ToString>(st: &T) -> Self;
+}
+
+impl FromString for Key {
+    fn from_string<T: ToString>(st: &T) -> Self {
+        match st.to_string().as_str() {
+            "space" => Key::Space,
+            "tab" => Key::Tab,
+            "backspace" => Key::Backspace,
+            "up" => Key::UpArrow,
+            "down" => Key::DownArrow,
+            "left" => Key::LeftArrow,
+            "right" => Key::RightArrow,
+            "insert" => Key::Insert,
+            "delete" => Key::Delete,
+            "home" => Key::Home,
+            "end" => Key::End,
+            "page up" => Key::PageUp,
+            "page down" => Key::PageDown,
+            "esc" => Key::Escape,
+            _ => Key::Unicode(st.to_string().chars().next().unwrap()),
         }
     }
 }
@@ -41,15 +89,18 @@ mod test {
     use super::*;
     #[test]
     fn test_parse() {
+        let key_a = Key::from_string(&"a");
+        let key_space = Key::from_string(&"space");
+
         let kbd = KbdCommand::parse(vec!["kbd", "p", "a"]);
-        assert_eq!(kbd, KbdCommand::P("a".to_string()));
+        assert_eq!(kbd, KbdCommand::P(key_a));
 
         let kbd = KbdCommand::parse(vec!["kbd", "r", "space"]);
-        assert_eq!(kbd, KbdCommand::R("space".to_string()));
+        assert_eq!(kbd, KbdCommand::R(key_space));
 
         let kbd = KbdCommand::parse(vec!["kbd", "r", "space", "o"]);
         // should only get one key
-        assert_eq!(kbd, KbdCommand::R("space".to_string()));
+        assert_eq!(kbd, KbdCommand::R(key_space));
 
         let kbd = KbdCommand::parse(vec!["kbd", "t", "hello", "world"]);
         assert_eq!(kbd, KbdCommand::T("hello world".to_string()));

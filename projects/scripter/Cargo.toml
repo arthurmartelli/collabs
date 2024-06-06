@@ -4,4 +4,4 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-enigo = "0.2.1"
+enigo = { version = "0.2.1", features = ["serde"] }

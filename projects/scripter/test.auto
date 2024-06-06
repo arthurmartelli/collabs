@@ -1,5 +1,5 @@
 wait time 1 seconds
-kbd p a
-kbd r a
+kbd c a
+kbd c space
 click d r
-kbd t abc
+kbd t hello world
