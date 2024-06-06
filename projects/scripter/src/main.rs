@@ -1,13 +1,22 @@
-use file::{get_file_name, get_file_reader};
-use std::io::BufRead;
+use std::env;
 
+use cmd::Commands;
+
+mod cmd;
 mod file;
 
 fn main() {
-    let file_name = get_file_name();
-    let reader = get_file_reader(file_name);
+    // first argument is the file name
+    let file_name = env::args()
+        .collect::<Vec<String>>()
+        .get(1)
+        .unwrap_or_else(|| panic!("No file name provided"))
+        .trim()
+        .to_string();
 
-    reader
-        .lines()
-        .for_each(|line| println!("{}", line.unwrap()))
+    let commands = Commands::parse_file(file_name);
+
+    for c in commands.iter() {
+        c.execute();
+    }
 }

@@ -1,15 +1,12 @@
-use std::{env, fs::File, io::BufReader};
+use std::{fs::File, io::BufReader};
 
 // 10 MB
 const CHUNK_SIZE: usize = 10 * 1024 * 1024;
 
-pub fn get_file_name() -> String {
-    let args: Vec<String> = env::args().collect();
-    args.get(1).expect("No filename provided").to_string()
-}
-
-pub fn get_file_reader(file_name: String) -> BufReader<File> {
-    let file = File::open(&file_name).expect(format!("Unable to open {}", &file_name).as_str());
+pub fn get_file_reader<T: Into<String>>(file_name: T) -> BufReader<File> {
+    let file_name = file_name.into();
+    // should crash if we can't open the file
+    let file = File::open(&file_name).unwrap_or_else(|_| panic!("Unable to open {}", &file_name));
     BufReader::with_capacity(CHUNK_SIZE, file)
 }
 
@@ -18,8 +15,11 @@ mod tests {
     use super::*;
     use std::{fs, io::BufRead};
 
-    fn test_file(file_name: &str, contents: &str) {
-        fs::write(file_name, contents).expect("Unable to write to test file");
+    fn test_file<T: Into<String>>(file_name: T, contents: T) {
+        let file_name = file_name.into();
+        let contents = contents.into();
+
+        fs::write(&file_name, &contents).expect("Unable to write to test file");
 
         // assert chunk size
         let reader = get_file_reader(file_name.to_string());
@@ -39,7 +39,7 @@ mod tests {
     #[test]
     fn test_small_file_read() {
         test_file(
-            "test_small_file_read.txt",
+            "test_small_file_read.auto",
             "This is a test file.\nWith multiple lines!",
         );
     }
@@ -47,9 +47,9 @@ mod tests {
     #[test]
     fn test_large_file_read() {
         test_file(
-            "test_large_file_read.txt",
-            "This is a test file.\nWith multiple lines!\n"
-                .repeat(10e5 as usize) // around 40mb
+            "test_large_file_read.auto",
+            "This is a test file.\nWith multiple lines.\n"
+                .repeat(10e5 as usize) // around 40mb file size
                 .as_str(),
         );
     }
