@@ -1,7 +1,0 @@
-wait time 1 seconds
-kbd press a
-kbd click space
-kbd release a
-mouse move 100 300 abs
-mouse scroll 20 y
-kbd type hello world

@@ -1,0 +1,21 @@
+# Needs to support comment lines that begins
+# with #, and in-line comments
+
+# The dot (`.`) it's only use at the top level to indicate
+# that it is the .START command, or a .SUB routine
+.START { # Here is where the program should be called
+    #? each command ends on a new line?
+    CALL .MY_SUBROUTINE; # we can call subroutines by adding a . before
+    KBD PRESS a; # or we use instructions
+}
+
+.SUB MY_SUBROUTINE { # subroutines are like functions
+    WAIT TIME 1 seconds;
+    KBD PRESS a;
+    MOUSE MOVE 10 100 rel;
+
+    # Looping construct
+    REPEAT 10 {
+        KBD PRESS b;
+    }
+}

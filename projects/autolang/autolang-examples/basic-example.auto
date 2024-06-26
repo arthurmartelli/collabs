@@ -1,0 +1,25 @@
+.START {
+    # each command ends on the new line?
+    x := 10
+
+    REPEAT i from 0 to x {
+        CALL .LOGOUT
+        CALL .LOGIN
+        PRINT "Iteration {i + 1} complete"
+    }
+}
+
+.SUB LOGOUT {
+    KBD PRESS esc
+
+    # the command structure is as follows:
+    # command  sub-command  selection   operation arguments: (x, y, color)
+    WAIT     TRIGGER      PIXEL_COLOR EQ        310 450 #FFFFFF
+
+    WAIT TIME 1 seconds
+    MOUSE CLICK 500 600
+}
+
+.SUB LOGIN {
+    # ...
+}

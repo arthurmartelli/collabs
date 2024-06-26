@@ -1,0 +1,40 @@
+program = _{ SOI ~ "\n"* ~ (stmt ~ "\n"*)* ~ stmt? ~ EOI }
+
+stmt = _{ expr }
+
+// ! Expressions
+
+expr = {
+    keywords
+  | assgmtExpr
+  | monadicExpr
+  | dyadicExpr
+  | block
+  | terms
+}
+
+monadicExpr = { verb ~ expr ~ block* }
+dyadicExpr  = { (monadicExpr | terms) ~ verb ~ expr }
+assgmtExpr  = { ident ~ ":=" ~ expr }
+
+terms =  { term+ }
+term  = _{ builtins | string | decimal | integer | ident | "(" ~ expr ~ ")" }
+block =  { "{" ~ "\n"* ~ (stmt ~ "\n"*)* ~ "}" }
+
+// verbs
+verb       =  { arithmetic | keywords | builtins }
+keywords   = @{ ".START" | ".SUB" | "CALL" }
+builtins   =  { "."* ~ (ASCII_ALPHA_UPPER ~ "_"*)+ }
+arithmetic = @{ "+" | "-" | "*" | "\\" }
+
+// ! Syntax
+
+// data types
+integer = @{ "_"? ~ ASCII_DIGIT+ }
+decimal = @{ "_"? ~ ASCII_DIGIT+ ~ "." ~ ASCII_DIGIT* }
+ident   = @{ ASCII_ALPHA_LOWER+ ~ (ASCII_ALPHANUMERIC | "_")* }
+string  = @{ "\"" ~ ("\"\"" | (!"\"" ~ ANY))* ~ "\"" }
+
+// lang features
+WHITESPACE = _{ " " | "\t" }
+COMMENT    = _{ "#" ~ (!"\n" ~ ANY)* }

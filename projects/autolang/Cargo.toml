@@ -1,0 +1,10 @@
+[package]
+name = "autolang"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+enigo = { version = "0.2.1", features = ["serde"] }
+pest = "2.7.10"
+pest_derive = "2.7.10"
